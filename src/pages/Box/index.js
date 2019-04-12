@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import io from 'socket.io-client';
+import socket from 'socket.io-client';
 
 import api from '../../services/api';
 
@@ -29,16 +29,16 @@ export default class Box extends Component {
   async componentDidMount(){
     const box = await AsyncStorage.getItem('@RocketBox:box');
     const response = await api.get(`boxes/${box}`);
-    this.subscribeToNewFiles(box);
-    console.log(box)
+    this.subscribeToNewFiles();
     this.setState({box: response.data})
+    console.log(box)
 
 
   }
 
-  subscribeToNewFiles = (box) => {
+  subscribeToNewFiles = async () => {
     const io = socket('https://boxbackend.herokuapp.com');
-
+    const box = await AsyncStorage.getItem('@RocketBox:box');
     io.emit('connectRoom', box);
 
     io.on('file', data => {
@@ -62,9 +62,10 @@ export default class Box extends Component {
   }
 
   handleUpload = () => {
-    ImagePicker.lauchImageLibrary({}, async upload =>{
+    
+    ImagePicker.launchImageLibrary({}, async upload =>{
       if(upload.error){
-
+          console.log(upload.error)
       }else if(upload.didCancel){
 
       }else {
@@ -114,7 +115,7 @@ export default class Box extends Component {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         renderItem={this.renderItem} />
 
-      <TouchableOpacity style={styles.fab} onPres={this.handleUpload}>
+      <TouchableOpacity style={styles.fab} onPres={() => this.handleUpload}>
         <Icon name='cloud-upload' size={24} color='#fff' />
       </TouchableOpacity>
     </View>);
