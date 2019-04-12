@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import io from 'socket.io-client';
+
 import api from '../../services/api';
 
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
@@ -25,16 +27,17 @@ export default class Box extends Component {
   }
   
   async componentDidMount(){
-    this.subscribeToNewFiles(box);
-
-    const box = AsyncStorage.getItem('@RocketBox:box');
+    const box = await AsyncStorage.getItem('@RocketBox:box');
     const response = await api.get(`boxes/${box}`);
-
+    this.subscribeToNewFiles(box);
+    console.log(box)
     this.setState({box: response.data})
+
+
   }
 
   subscribeToNewFiles = (box) => {
-    const io = socket('https://boxbackend.herokuapp.com/');
+    const io = socket('https://boxbackend.herokuapp.com');
 
     io.emit('connectRoom', box);
 
