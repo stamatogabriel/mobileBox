@@ -1,8 +1,5 @@
 import { StyleSheet, Platform } from "react-native";
-import {
-  getBottomSpace,
-  getStatusBarHeight
-} from "react-native-iphone-x-helper";
+
 
 const styles = StyleSheet.create({
   container: {
@@ -54,7 +51,7 @@ const styles = StyleSheet.create({
   fab: {
     position: "absolute",
     right: 30,
-    bottom: 30 + getBottomSpace(),
+    bottom: 30,
     width: 60,
     height: 60,
     backgroundColor: "#7159c1",

@@ -12,7 +12,9 @@ import styles from './styles';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import 
+import RNFS from 'react-native-fs';
+
+import FileViewer from 'react-native-file-viewer';
 
 import { distanceInWords } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -23,7 +25,7 @@ export default class Box extends Component {
   }
   
   async componentDidMount(){
-    this.subscribeToNewFiles();
+    this.subscribeToNewFiles(box);
 
     const box = AsyncStorage.getItem('@RocketBox:box');
     const response = await api.get(`boxes/${box}`);
@@ -31,9 +33,26 @@ export default class Box extends Component {
     this.setState({box: response.data})
   }
 
-  openFile = (file) => {
-    try{
+  subscribeToNewFiles = (box) => {
+    const io = socket('https://boxbackend.herokuapp.com/');
 
+    io.emit('connectRoom', box);
+
+    io.on('file', data => {
+      this.setState({ box: { ...this.state.box, files:[data, ...this.state.box.files] } })
+    })
+  }
+
+  openFile = async (file) => {
+    try{
+      const filePath = `${RNFS.DocumentDirectoryPath}/${file.title}`;
+
+      await RNFS.downloadFile({
+        fromUrl: file.url,
+        toFile: filePath,
+      })
+
+      await FileViewer.open(filePath)
     }catch(err){
 
     }
@@ -83,7 +102,7 @@ export default class Box extends Component {
   render() {
     return (
     <View style={styles.container}>
-      <Text style={style.boxTitle}>{this.state.box.title}</Text>
+      <Text style={styles.boxTitle}>{this.state.box.title}</Text>
 
       <FlatList 
         style={styles.list}
