@@ -51,7 +51,6 @@ export default class Box extends Component {
         fromUrl: file.url,
         toFile: filePath,
       })
-
       await FileViewer.open(filePath)
     }catch(err){
 
@@ -59,17 +58,16 @@ export default class Box extends Component {
   }
 
   handleUpload = () => {
-    
-    ImagePicker.launchImageLibrary({}, async upload =>{
+    ImagePicker.launchImageLibrary({}, async upload => {
       if(upload.error){
-          console.log(upload.error)
+          console.log('ImagePicker error')
       }else if(upload.didCancel){
-
+          console.log('Canceled by user')
       }else {
         const data = new FormData();
 
         const [prefix, sufix] = upload.fileName.split('.')
-        const ext = sufix.toLowerCase() === 'heic' ? jpg : sufix;
+        const ext = sufix.toLowerCase() === 'heic' ? 'jpg' : sufix;
 
           data.append('file', {
           uri: upload.uri,
@@ -112,9 +110,11 @@ export default class Box extends Component {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         renderItem={this.renderItem} />
 
-      <TouchableOpacity style={styles.fab} onPres={() => this.handleUpload}>
+      <TouchableOpacity style={styles.fab} onPres={this.handleUpload}>
         <Icon name='cloud-upload' size={24} color='#fff' />
       </TouchableOpacity>
+
+
     </View>);
   }
 }
