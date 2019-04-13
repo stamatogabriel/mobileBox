@@ -58,7 +58,7 @@ export default class Box extends Component {
   }
 
   handleUpload = () => {
-    ImagePicker.launchImageLibrary({}, async upload => {
+    ImagePicker.launchImageLibrary({}, async (upload) => {
       if(upload.error){
           console.log('ImagePicker error')
       }else if(upload.didCancel){
@@ -75,7 +75,7 @@ export default class Box extends Component {
           name: `${prefix}.${ext}`
         })
 
-        api.post(`boxes/${this.state.box._id}`, data);
+        api.post(`boxes/${this.state.box._id}/files`, data);
       }
     })
   }
@@ -110,7 +110,7 @@ export default class Box extends Component {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         renderItem={this.renderItem} />
 
-      <TouchableOpacity style={styles.fab} onPres={this.handleUpload}>
+      <TouchableOpacity style={styles.fab} onPress={this.handleUpload}>
         <Icon name='cloud-upload' size={24} color='#fff' />
       </TouchableOpacity>
 
